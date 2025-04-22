@@ -1,0 +1,62 @@
+@page "/editar/{Id:int}"
+@using BlazorApp1.Data
+@using BlazorApp1.Models
+@inject AppDbContext DbContext
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<h3>Editar Cliente</h3>
+
+@if(cliente == null)
+{
+    <p><em>Carregando...</em></p>
+}
+else
+{
+    <EditForm Model="@cliente" OnValidSubmit="SalvarCliente">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div>
+            <label for="nome">Nome</label>
+            <InputText id="nome" class="form-control" @bind-Value="cliente.Nome" />
+        </div>
+
+        <div>
+            <label for="email">Email</label>
+            <InputText id="email" class="form-control" @bind-Value="cliente.Email" />
+        </div>
+
+        <div>
+            <label for="telefone">Telefone</label>
+            <InputText id="telefone" class="form-control" @bind-Value="cliente.Telefone" />
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Salvar</button>
+        <button type="button" class="btn btn-secondary mt-3 ms-2" @onclick="Cancelar">Cancelar</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Cliente cliente;
+
+    protected override async Task OnInitializedAsync()
+    {
+        cliente = await DbContext.Clientes.FindAsync(Id);
+    }
+
+    private async Task SalvarCliente()
+    {
+        DbContext.Clientes.Update(cliente);
+        await DbContext.SaveChangesAsync();
+        Navigation.NavigateTo("/listar");
+    }
+
+    private void Cancelar()
+    {
+        Navigation.NavigateTo("/listar");
+    }
+}

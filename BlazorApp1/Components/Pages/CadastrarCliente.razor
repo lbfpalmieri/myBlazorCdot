@@ -1,0 +1,54 @@
+@page "/cadastrar"
+@rendermode InteractiveServer
+@using BlazorApp1.Data
+@using BlazorApp1.Models
+@using Microsoft.AspNetCore.Components.Forms
+@inject AppDbContext DbContext
+
+<div class="container mt-5">
+    <div class="card shadow p-4 mx-auto" style="max-width: 600px;">
+        <h3 class="card-title text-center mb-4">Cadastrar Cliente</h3>
+
+        @if (mensagemSucesso != null)
+        {
+            <div class="alert alert-success mb-4" role="alert">
+                @mensagemSucesso
+            </div>
+        }
+
+        <EditForm Model="@cliente" OnValidSubmit="OnCadastrarCliente">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="mb-3">
+                <label for="nome" class="form-label">Nome</label>
+                <InputText id="nome" class="form-control" @bind-Value="cliente.Nome" />
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <InputText id="email" class="form-control" @bind-Value="cliente.Email" />
+            </div>
+
+            <div class="mb-4">
+                <label for="telefone" class="form-label">Telefone</label>
+                <InputText id="telefone" class="form-control" @bind-Value="cliente.Telefone" />
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Cadastrar</button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private Cliente cliente = new Cliente();
+    private string? mensagemSucesso;
+
+    private async Task OnCadastrarCliente()
+    {
+        DbContext.Clientes.Add(cliente);
+        await DbContext.SaveChangesAsync();
+        mensagemSucesso = "Cliente cadastrado com sucesso!";
+        cliente = new Cliente();
+    }
+}
